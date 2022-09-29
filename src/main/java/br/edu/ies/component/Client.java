@@ -9,12 +9,11 @@ import java.net.Socket;
 public class Client {
     private Long id;
     private String name;
-    private String host;
+    private Socket socket;
 
-    public Client(Long id, String name, String host) {
+    public Client(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.host = host;
     }
 
     /**
@@ -24,8 +23,9 @@ public class Client {
      * @return connected Socket
      * @throws IOException if the connection cannot be aquired
      */
-    public Socket establishConnection(Integer port) throws IOException {
-        return new Socket(this.host, port);
+    public Socket establishConnection(String host, Integer port) throws IOException {
+        this.socket = new Socket(host, port);
+        return socket;
     }
 
 
