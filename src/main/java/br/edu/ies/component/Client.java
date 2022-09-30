@@ -1,17 +1,16 @@
 package br.edu.ies.component;
 
+import lombok.Data;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 
-import lombok.Data;
-
 @Data
 public class Client implements Serializable {
-	private static final long serialVersionUID = 3109940289114519368L;
 	private Long id;
     private String name;
-    private transient Socket socket;
+    private Socket socket;
 
     public Client(Long id, String name) {
         this.id = id;

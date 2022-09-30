@@ -1,14 +1,14 @@
 package br.edu.ies.component;
 
+import br.edu.ies.util.Logger;
+import lombok.Data;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
-
-import br.edu.ies.util.Logger;
-import lombok.Data;
 
 @Data
 public class Server {
@@ -27,14 +27,35 @@ public class Server {
      * @throws ClassNotFoundException if the message cannot be propertly translated
      */
     public void handleConnection(Socket socket) throws IOException, ClassNotFoundException {
-    	InputStream inputStream = socket.getInputStream();
-    	ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-    	
-    	//TODO: Possivelmente criar um objeto genérico para passar os objetos
-    	//TODO: Possivelmente também usar JSON para comunicar as informações
-    	//TODO: No objeto para comunicar utilizar um campo para determinar a operação desejada pelo usuário
-    	Client client = (Client) objectInputStream.readObject();
-    	Logger.logProcess("Object Received: " + client);
+        while (socket.isConnected()) {
+            try {
+                InputStream inputStream = socket.getInputStream();
+                while (inputStream.available() != 0) {
+                    System.out.println("Inputstream Available: " + inputStream.available());
+                    ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                    System.out.println("Inputstream Available: " + inputStream.available());
+
+                    System.out.println("Teste");
+                    System.out.println("Available: " + objectInputStream.available());
+
+                    //TODO: Possivelmente criar um objeto genérico para passar os objetos
+                    //TODO: Possivelmente também usar JSON para comunicar as informações
+                    //TODO: No objeto para comunicar utilizar um campo para determinar a operação desejada pelo usuário
+                    Message message = (Message) objectInputStream.readObject();
+                    Logger.logProcess("Message Received -> " + message);
+                }
+
+            } catch (Exception e) {
+                Logger.logServer("EOFExeption");
+            }
+        }
+        Logger.logServer("Connection closed -> " + socket);
+    }
+
+    private static void showState(Socket socket) {
+        System.out.println("Closed: " + socket.isClosed());
+        System.out.println("Connected: " + socket.isConnected());
+        System.out.println("Bound: " + socket.isBound());
     }
 
     /**

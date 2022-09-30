@@ -11,7 +11,7 @@ public class MainServer {
     public static void main(String[] args) {
     	Logger.logServer("Started");
         Server server = new Server();
-        Integer port = 1234;
+        int port = 1234;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
         	Logger.logServer("Listening at port [" + port + "]");
             while (!serverSocket.isClosed()) {
@@ -20,10 +20,9 @@ public class MainServer {
                 server.handleConnection(client);
                 server.addConnection(client);
             }
-        } catch (IOException e) {
+            Logger.logServer("Server Socket closed");
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+        }
     }
 }
