@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import java.io.IOException;
 import java.net.Socket;
 
+// TODO: Talvez chamar somente de ServerGateway e abstrair uma forma de lidar 
+//  com a conexão para enviar mensagens e receber mensagens pela mesma classe
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ServerRequestGateway extends Thread {
@@ -21,16 +23,17 @@ public class ServerRequestGateway extends Thread {
     @Override
     public void run() {
         Logger.logGateway("Connection established -> " + client);
-        var messageListener = new MessageListener(client, server.getChat());
-        messageListener.subcribe();
         try {
+            var messageListener = new MessageListener(client, server.getChat());
+            messageListener.subcribe();
+            this.server.addConnection(client);
             this.server.handleConnection(client);
             client.close();
+            messageListener.unsubcribe();
+            this.server.removeConnection(client);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        messageListener.unsubcribe();
-        this.server.removeConnection(client);
         Logger.logServer("Connection closed -> " + client);
     }
 
