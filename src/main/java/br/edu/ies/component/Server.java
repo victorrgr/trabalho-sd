@@ -1,21 +1,24 @@
 package br.edu.ies.component;
 
 import br.edu.ies.util.Logger;
+import br.edu.ies.util.Utils;
 import lombok.Data;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 @Data
 public class Server {
+    private Chat chat;
     private List<Socket> connections;
 
     public Server() {
         this.connections = new LinkedList<>();
+        this.chat = new Chat();
     }
 
     /**
@@ -27,36 +30,32 @@ public class Server {
      * @throws ClassNotFoundException if the message cannot be propertly translated
      */
     public void handleConnection(Socket socket) throws IOException, ClassNotFoundException {
-        while (socket.isConnected()) {
-            try {
-                InputStream inputStream = socket.getInputStream();
-                while (inputStream.available() != 0) {
-                    System.out.println("Inputstream Available: " + inputStream.available());
-                    ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                    System.out.println("Inputstream Available: " + inputStream.available());
+        Scanner scanner = new Scanner(socket.getInputStream());
+        while (scanner.hasNextLine()) {
+            CommObject comm = Utils.MAPPER.readValue(scanner.nextLine(), CommObject.class);
+            Logger.logProcess("Request Received -> " + comm);
 
-                    System.out.println("Teste");
-                    System.out.println("Available: " + objectInputStream.available());
-
-                    //TODO: Possivelmente criar um objeto genérico para passar os objetos
-                    //TODO: Possivelmente também usar JSON para comunicar as informações
-                    //TODO: No objeto para comunicar utilizar um campo para determinar a operação desejada pelo usuário
-                    Message message = (Message) objectInputStream.readObject();
-                    Logger.logProcess("Message Received -> " + message);
-                }
-
-            } catch (Exception e) {
-                Logger.logServer("EOFExeption");
+            if (comm.getOperation() == Operation.SEND_MESSAGE) {
+                Message message = new Message((String) comm.getContent(), comm.getClient());
+                Logger.logProcess("Send Message -> " + socket);
+                chat.addMessage(message);
+            } else if (comm.getOperation() == Operation.RETRIEVE_MESSAGES) {
+                CommObject response = new CommObject(Operation.RECEIVE_MESSAGES, chat.getMessages());
+                PrintStream printStream = new PrintStream(socket.getOutputStream());
+                Logger.logProcess("Retrieve Messages -> " + socket);
+                printStream.println(Utils.MAPPER.writeValueAsString(response));
             }
+
+//            Logger.logServer("Chat messages: " + chat.getMessages());
         }
-        Logger.logServer("Connection closed -> " + socket);
+
     }
 
-    private static void showState(Socket socket) {
-        System.out.println("Closed: " + socket.isClosed());
-        System.out.println("Connected: " + socket.isConnected());
-        System.out.println("Bound: " + socket.isBound());
-    }
+//    private static void showState(Socket socket) {
+//        System.out.println("Closed: " + socket.isClosed());
+//        System.out.println("Connected: " + socket.isConnected());
+//        System.out.println("Bound: " + socket.isBound());
+//    }
 
     /**
      * Adds a new connection to the servers attributes
@@ -65,6 +64,10 @@ public class Server {
      */
 	public void addConnection(Socket client) {
 		this.connections.add(client);
+	}
+
+	public void removeConnection(Socket client) {
+		this.connections.remove(client);
 	}
     
 }

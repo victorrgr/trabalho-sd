@@ -1,6 +1,9 @@
 package br.edu.ies.component;
 
 public enum Operation {
-	READ, DELETE, WRITE;
-
+    CLOSE_CONNECTION,
+    SEND_MESSAGE,
+    RECEIVE_MESSAGE,
+    RETRIEVE_MESSAGES,
+    RECEIVE_MESSAGES;
 }

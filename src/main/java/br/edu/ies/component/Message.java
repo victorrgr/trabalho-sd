@@ -2,15 +2,21 @@ package br.edu.ies.component;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 @Data
-public class Message implements Serializable {
-	private Operation operation;
-	private String json;
+public class Message {
+    private String content;
+    private Client sender;
 
-	public Message(Operation operation, String json) {
-		this.operation = operation;
-		this.json = json;
-	}
+    public Message() {}
+
+    public Message(String content, Client sender) {
+        this.content = content;
+        this.sender = sender;
+    }
+
+    public void print() {
+        String output = sender.getName() + " Says: \n" + content;
+        System.out.println(output);
+    }
+
 }
