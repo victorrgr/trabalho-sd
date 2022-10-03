@@ -20,7 +20,6 @@ public class MainServer {
                 Socket client = serverSocket.accept();
                 var gateway = new ServerRequestGateway(server, client);
                 gateway.start();
-                server.addConnection(client);
             }
         } catch (IOException e) {
             e.printStackTrace();

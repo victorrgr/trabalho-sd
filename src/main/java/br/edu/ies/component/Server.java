@@ -1,15 +1,15 @@
 package br.edu.ies.component;
 
-import br.edu.ies.util.Logger;
-import br.edu.ies.util.Utils;
-import lombok.Data;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+
+import br.edu.ies.util.Logger;
+import br.edu.ies.util.Utils;
+import lombok.Data;
 
 @Data
 public class Server {
@@ -68,6 +68,11 @@ public class Server {
 
 	public void removeConnection(Socket client) {
 		this.connections.remove(client);
+	}
+
+	public void close() throws IOException {
+		for (var conn : this.connections)
+			conn.close();
 	}
     
 }

@@ -30,6 +30,9 @@ public class MainClient {
         Logger.logClient("Recebendo mensagens do servidor");
         Logger.separator();
         client.retrieveMessages();
+        
+//        ClientSenderGateway sender = new ClientSenderGateway(client);
+//        sender.start();
 
         boolean stop = false;
         while (!stop) {

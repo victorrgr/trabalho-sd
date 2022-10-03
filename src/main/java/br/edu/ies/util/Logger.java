@@ -30,4 +30,8 @@ public class Logger {
 	public static void separator() {
 		System.out.println(SEPARATOR);
 	}
+
+	public static void logAssertion() {
+		System.out.println("ASSERTIONS");
+	}
 }
