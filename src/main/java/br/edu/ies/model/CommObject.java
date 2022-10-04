@@ -1,14 +1,19 @@
-package br.edu.ies.component;
+package br.edu.ies.model;
 
-import br.edu.ies.util.Utils;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import br.edu.ies.component.Client;
+import br.edu.ies.util.Utils;
 import lombok.Data;
 
 // TODO: Encontrar um nome melhorar para colocar nesse objeto
 
 /**
- * Object used to communicate between sockets
+ * Common Object used to enable ease communication between
+ * client and server sockets. It will be serialized as JSON.
+ * With the operation enum as one of its properties, it enables
+ * a way of knowing which action is to be taken in the server
+ * or client side.
  */
 @Data
 public class CommObject {
@@ -18,10 +23,11 @@ public class CommObject {
 
 	public CommObject() {}
 
-	public CommObject(Operation operation) {
+	public CommObject(Operation operation, Client client) {
 		this.operation = operation;
+		this.client = client;
 	}
-
+	
 	public CommObject(Operation operation, Object content) {
 		this.operation = operation;
 		try {

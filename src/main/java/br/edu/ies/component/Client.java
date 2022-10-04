@@ -1,14 +1,23 @@
 package br.edu.ies.component;
 
-import br.edu.ies.util.Logger;
-import br.edu.ies.util.Utils;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import br.edu.ies.model.Chat;
+import br.edu.ies.model.CommObject;
+import br.edu.ies.model.Message;
+import br.edu.ies.model.Operation;
+import br.edu.ies.util.Utils;
+import lombok.Data;
+
+/**
+ * Class that represents the user which can send messages to 
+ * a chat in a remote server using a socket
+ * @author victorrgr
+ */
 @Data
 public class Client {
 	private String id;
@@ -40,6 +49,10 @@ public class Client {
         this.connected = Boolean.TRUE;
     }
 
+    /**
+     * Closes the connection with the remote server socket
+     * @throws IOException if the connection is no longer available
+     */
     public void closeConnection() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
             throw new IllegalStateException("Not connected");
@@ -48,15 +61,31 @@ public class Client {
     }
 
     /**
-     * Send message to the server
+     * Sends a leave message to the server
      *
      * @param commObject object to transfer information
      * @throws IOException if the connection is no longer available
      */
-    public void sendMessage(CommObject commObject) throws IOException {
+    public void sendLeave() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
             throw new IllegalStateException("Not connected");
-        commObject.setClient(this);
+        CommObject commObject = new CommObject(Operation.SEND_LEAVE_MESSAGE, null, this);
+        var outputStream = socket.getOutputStream();
+        var printStream = new PrintStream(outputStream);
+        System.out.println("You left the chat");
+        printStream.println(Utils.MAPPER.writeValueAsString(commObject));
+    }
+    
+    /**
+     * Sends a message to the server
+     *
+     * @param commObject object to transfer information
+     * @throws IOException if the connection is no longer available
+     */
+    public void sendMessage(String content) throws IOException {
+        if (Boolean.FALSE.equals(this.connected))
+            throw new IllegalStateException("Not connected");
+        CommObject commObject = new CommObject(Operation.SEND_MESSAGE, content, this);
         var outputStream = socket.getOutputStream();
         var printStream = new PrintStream(outputStream);
         Message message = new Message(commObject.getContent(), this);
@@ -65,18 +94,17 @@ public class Client {
     }
 
     /**
-     * Send message to the server to retrieve all messages that it has
+     * Send message to the server to retrieve all messages that has
+     * been sent to it
      *
      * @throws IOException if the connection is no longer available
      */
     public void retrieveMessages() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
             throw new IllegalStateException("Not connected");
-        CommObject commObject = new CommObject(Operation.RETRIEVE_MESSAGES);
-        commObject.setClient(this);
+        CommObject commObject = new CommObject(Operation.RETRIEVE_MESSAGES, this);
         var outputStream = socket.getOutputStream();
         var printStream = new PrintStream(outputStream);
         printStream.println(Utils.MAPPER.writeValueAsString(commObject));
-        Logger.logClient("RETRIEVE_MESSAGES");
     }
 }

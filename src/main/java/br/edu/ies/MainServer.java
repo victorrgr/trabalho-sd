@@ -1,13 +1,16 @@
 package br.edu.ies;
 
 import br.edu.ies.component.Server;
-import br.edu.ies.component.ServerRequestGateway;
+import br.edu.ies.component.ServerReceiverGateway;
 import br.edu.ies.util.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Main execution class for the server
+ */
 public class MainServer {
 	
     public static void main(String[] args) {
@@ -18,7 +21,7 @@ public class MainServer {
         	Logger.logServer("Listening at port [" + port + "]");
             while (!serverSocket.isClosed()) {
                 Socket client = serverSocket.accept();
-                var gateway = new ServerRequestGateway(server, client);
+                var gateway = new ServerReceiverGateway(server, client);
                 gateway.start();
             }
         } catch (IOException e) {

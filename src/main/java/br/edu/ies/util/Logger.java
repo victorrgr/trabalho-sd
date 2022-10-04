@@ -1,5 +1,9 @@
 package br.edu.ies.util;
 
+/**
+ * Custom utilitary logger for displaying messages
+ * to the server
+ */
 public class Logger {
 	private static final String PROCESS = "PROCESS";
 	private static final String SERVER = "SERVER";
@@ -34,4 +38,5 @@ public class Logger {
 	public static void logAssertion() {
 		System.out.println("ASSERTIONS");
 	}
+
 }
