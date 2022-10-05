@@ -19,6 +19,9 @@ import lombok.Data;
  */
 @Data
 public class Client {
+	@JsonIgnore
+	private static final String NOT_CONNECTED = "Not connected";
+	
 	private String id;
     private String name;
     @JsonIgnore
@@ -62,7 +65,7 @@ public class Client {
      */
     public void closeConnection() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
-            throw new IllegalStateException("Not connected");
+            throw new IllegalStateException(NOT_CONNECTED);
         this.connected = Boolean.FALSE;
         this.socket.close();
     }
@@ -75,7 +78,7 @@ public class Client {
      */
     public void sendLeave() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
-            throw new IllegalStateException("Not connected");
+            throw new IllegalStateException(NOT_CONNECTED);
         Message message = new Message(null, this);
         CommObject commObject = new CommObject(Operation.SEND_LEAVE_MESSAGE, message, this);
         var outputStream = socket.getOutputStream();
@@ -92,15 +95,18 @@ public class Client {
      */
     public void sendMessage(String content) throws IOException {
         if (Boolean.FALSE.equals(this.connected))
-            throw new IllegalStateException("Not connected");
+            throw new IllegalStateException(NOT_CONNECTED);
         Message message = new Message(content, this);
         CommObject commObject = new CommObject(Operation.SEND_MESSAGE, message, this);
-        var outputStream = socket.getOutputStream();
-        var printStream = new PrintStream(outputStream);
+        communicate(Utils.MAPPER.writeValueAsString(commObject));
         message.print();
-        printStream.println(Utils.MAPPER.writeValueAsString(commObject));
 //        confirmServerReceive();
     }
+
+	private void communicate(String str) throws IOException {
+        var printStream = new PrintStream(socket.getOutputStream());
+        printStream.println(str);
+	}
 
     /**
      * Send message to the server to retrieve all messages that has
@@ -110,10 +116,8 @@ public class Client {
      */
     public void retrieveMessages() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
-            throw new IllegalStateException("Not connected");
+            throw new IllegalStateException(NOT_CONNECTED);
         CommObject commObject = new CommObject(Operation.RETRIEVE_MESSAGES, this);
-        var outputStream = socket.getOutputStream();
-        var printStream = new PrintStream(outputStream);
-        printStream.println(Utils.MAPPER.writeValueAsString(commObject));
+        communicate(Utils.MAPPER.writeValueAsString(commObject));
     }
 }

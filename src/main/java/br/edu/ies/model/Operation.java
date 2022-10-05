@@ -12,4 +12,7 @@ public enum Operation {
     RECEIVE_MESSAGES, 
     SEND_LEAVE_MESSAGE, 
     RECEIVE_LEAVE_MESSAGE;
+	
+	private Operation() {
+	}
 }

@@ -64,6 +64,34 @@ public class Server {
 				e.printStackTrace();
 		}
     }
+    
+    public void handleConnectionSync(Socket socket) throws IOException {
+    	try (Scanner scanner = new Scanner(socket.getInputStream())) {
+            while (scanner.hasNextLine()) {
+                CommObject comm = Utils.MAPPER.readValue(scanner.nextLine(), CommObject.class);
+                Logger.logProcess("Request Received -> " + comm);
+
+                if (comm.getOperation() == Operation.SEND_MESSAGE) {
+                    Message message = Utils.MAPPER.readValue(comm.getContent(), Message.class);
+                    Logger.logProcess("Send Message -> " + socket);
+                    chat.addMessage(message);
+                    
+                } else if (comm.getOperation() == Operation.SEND_LEAVE_MESSAGE) {
+                	Message message = Utils.MAPPER.readValue(comm.getContent(), Message.class);
+                	message.setContent(" left the chat");
+                	Logger.logProcess("Chat leave -> " + socket);
+                	chat.addLeaveMessage(message);
+                	
+                } else if (comm.getOperation() == Operation.RETRIEVE_MESSAGES) {
+                    CommObject response = new CommObject(Operation.RECEIVE_MESSAGES, chat.getMessages());
+                    PrintStream printStream = new PrintStream(socket.getOutputStream());
+                    Logger.logProcess("Retrieve Messages -> " + socket);
+                    printStream.println(Utils.MAPPER.writeValueAsString(response));
+                }
+                break;
+            }
+		}
+    }
 
 //    private static void showState(Socket socket) {
 //        System.out.println("Closed: " + socket.isClosed());
