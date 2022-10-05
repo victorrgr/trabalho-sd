@@ -42,11 +42,13 @@ public class Server {
                 Logger.logProcess("Request Received -> " + comm);
 
                 if (comm.getOperation() == Operation.SEND_MESSAGE) {
-                    Message message = new Message((String) comm.getContent(), comm.getClient());
+                    Message message = Utils.MAPPER.readValue(comm.getContent(), Message.class);
                     Logger.logProcess("Send Message -> " + socket);
                     chat.addMessage(message);
+                    
                 } else if (comm.getOperation() == Operation.SEND_LEAVE_MESSAGE) {
-                	Message message = new Message((String) " left the chat", comm.getClient());
+                	Message message = Utils.MAPPER.readValue(comm.getContent(), Message.class);
+                	message.setContent(" left the chat");
                 	Logger.logProcess("Chat leave -> " + socket);
                 	chat.addLeaveMessage(message);
                 	
@@ -84,16 +86,11 @@ public class Server {
 
 	public void close() {
 		this.closed = Boolean.TRUE;
-		try {
-			for (var conn : this.connections) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (connections.isEmpty())
+			return;
+		for (var conn : this.connections) {
+			try { conn.close(); } 
+			catch (Exception e) { e.printStackTrace(); }
 		}
 	}
     

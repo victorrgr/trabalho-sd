@@ -1,11 +1,10 @@
 package br.edu.ies.model;
 
-import lombok.Data;
-
 import java.util.LinkedList;
 import java.util.List;
 
 import br.edu.ies.component.MessageListener;
+import lombok.Data;
 
 /**
  * Class that holds all messages users send to the server. It
@@ -32,6 +31,15 @@ public class Chat {
     public void addMessage(Message message) {
         this.listeners.forEach(listener -> listener.notify(message));
         messages.add(message);
+    }
+    
+    /**
+     * Adds a list of messages to the chat
+     * 
+     * @param messages
+     */
+    public void addMessages(List<Message> messages) {
+    	this.messages.addAll(messages);
     }
     
     /**
@@ -62,4 +70,5 @@ public class Chat {
 	public void removeListener(MessageListener messageListener) {
 		listeners.remove(messageListener);
 	}
+
 }

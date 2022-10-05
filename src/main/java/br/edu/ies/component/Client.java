@@ -16,7 +16,6 @@ import lombok.Data;
 /**
  * Class that represents the user which can send messages to 
  * a chat in a remote server using a socket
- * @author victorrgr
  */
 @Data
 public class Client {
@@ -29,14 +28,21 @@ public class Client {
     @JsonIgnore
     private Chat chat;
 
-    public Client() {}
+    public Client() {
+    	this.chat = new Chat();
+    }
 
     public Client(String id, String name) {
         this.id = id;
         this.name = name;
         this.connected = Boolean.FALSE;
+        this.chat = new Chat();
     }
 
+    public void confirmServerReceive() throws IOException {
+    	this.socket.getInputStream().read();
+    }
+    
     /**
      * Establishes connection with remote socket in the specified remote port
      *
@@ -46,6 +52,7 @@ public class Client {
      */
     public void establishConnection(String host, Integer port) throws IOException {
         this.socket = new Socket(host, port);
+//        confirmServerReceive();
         this.connected = Boolean.TRUE;
     }
 
@@ -69,7 +76,8 @@ public class Client {
     public void sendLeave() throws IOException {
         if (Boolean.FALSE.equals(this.connected))
             throw new IllegalStateException("Not connected");
-        CommObject commObject = new CommObject(Operation.SEND_LEAVE_MESSAGE, null, this);
+        Message message = new Message(null, this);
+        CommObject commObject = new CommObject(Operation.SEND_LEAVE_MESSAGE, message, this);
         var outputStream = socket.getOutputStream();
         var printStream = new PrintStream(outputStream);
         System.out.println("You left the chat");
@@ -85,12 +93,13 @@ public class Client {
     public void sendMessage(String content) throws IOException {
         if (Boolean.FALSE.equals(this.connected))
             throw new IllegalStateException("Not connected");
-        CommObject commObject = new CommObject(Operation.SEND_MESSAGE, content, this);
+        Message message = new Message(content, this);
+        CommObject commObject = new CommObject(Operation.SEND_MESSAGE, message, this);
         var outputStream = socket.getOutputStream();
         var printStream = new PrintStream(outputStream);
-        Message message = new Message(commObject.getContent(), this);
         message.print();
         printStream.println(Utils.MAPPER.writeValueAsString(commObject));
+//        confirmServerReceive();
     }
 
     /**

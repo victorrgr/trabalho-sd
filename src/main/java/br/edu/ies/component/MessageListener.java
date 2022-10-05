@@ -10,14 +10,18 @@ import br.edu.ies.model.Message;
 import br.edu.ies.model.Operation;
 import br.edu.ies.util.Logger;
 import br.edu.ies.util.Utils;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * Class that represents a listener which will listen 
  * for messages in a chat and then notify to the user it
  * has been assigned for
  */
+@Data
 public class MessageListener {
     private Socket client;
+    @ToString.Exclude
     private Chat chat;
 
     public MessageListener(Socket client, Chat chat) {

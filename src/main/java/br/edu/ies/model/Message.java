@@ -25,7 +25,7 @@ public class Message {
      */
     public void print() {
         String output = sender.getName() + " Says: \n" + content;
-        System.out.println(output);
+        System.out.println(output + "\n");
     }
     
     /**

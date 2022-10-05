@@ -39,14 +39,19 @@ public class ClientReceiverGateway extends Thread {
                 CommObject comm = Utils.MAPPER.readValue(scanner.nextLine(), CommObject.class);
                 if (comm.getOperation() == Operation.RECEIVE_MESSAGE) {
                     Message message =  Utils.MAPPER.readValue(comm.getContent(), Message.class);
+                    client.getChat().addMessage(message);
                     if (!message.getSender().getId().equals(client.getId()))
                     	message.print();
+                    
                 } else if (comm.getOperation() == Operation.RECEIVE_LEAVE_MESSAGE) {
                 	Message message =  Utils.MAPPER.readValue(comm.getContent(), Message.class);
+                	client.getChat().addMessage(message);
                 	if (!message.getSender().getId().equals(client.getId()))
                     	message.printLeave();
+                	
                 } else if (comm.getOperation() == Operation.RECEIVE_MESSAGES) {
                     List<Message> messages = Utils.MAPPER.readValue(comm.getContent(), new TypeReference<>(){});
+                    client.getChat().addMessages(messages);
                     messages.forEach(Message::print);
                 }
             }

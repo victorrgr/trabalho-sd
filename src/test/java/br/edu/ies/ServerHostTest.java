@@ -30,7 +30,7 @@ public class ServerHostTest extends Thread {
         	serverSocket = new ServerSocket(port);
         	Logger.logServer("Listening at port [" + port + "]");
             while (!serverSocket.isClosed()) {
-                Socket client = serverSocket.accept();
+            	Socket client = serverSocket.accept();
                 var gateway = new ServerReceiverGateway(server, client);
                 gateway.start();
             }
@@ -53,7 +53,6 @@ public class ServerHostTest extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.interrupt();
 	}
 
 }

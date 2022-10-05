@@ -38,6 +38,8 @@ public class ServerReceiverGateway extends Thread {
         var messageListener = new MessageListener(client, server.getChat());
         messageListener.subcribe();
         try {
+//        	var confirm = Utils.CONFIRM_OBJECT;
+//        	this.client.getOutputStream().write(Utils.MAPPER.writeValueAsBytes(confirm));
             this.server.handleConnection(client);
             client.close();
         } catch (IOException | ClassNotFoundException e) {

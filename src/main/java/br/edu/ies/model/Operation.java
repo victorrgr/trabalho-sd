@@ -5,6 +5,7 @@ package br.edu.ies.model;
  * by the client or server
  */
 public enum Operation {
+	CONNECTED,
     SEND_MESSAGE,
     RECEIVE_MESSAGE,
     RETRIEVE_MESSAGES,

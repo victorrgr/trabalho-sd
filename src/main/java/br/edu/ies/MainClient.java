@@ -1,6 +1,7 @@
 package br.edu.ies;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -36,14 +37,19 @@ public class MainClient {
         client.retrieveMessages();
         
         boolean stop = false;
-        while (!stop) {
-            String message = scanner.nextLine();
-            if (message.equals("CLOSE_CONNECTION")) {
-            	client.sendLeave();
-            	break;
-            }
-            client.sendMessage(message);
-        }
+		try {
+			while (!stop) {
+
+				String message = scanner.nextLine();
+				if (message.equals("CLOSE_CONNECTION")) {
+					client.sendLeave();
+					break;
+				}
+				client.sendMessage(message);
+			}
+		} catch (SocketException e) {
+			Logger.logClient("Server connection lost");
+		}
         
         scanner.close();
         client.closeConnection();
