@@ -10,8 +10,6 @@ import lombok.Data;
  * Class that holds all messages users send to the server. It
  * also holds the references to the listeners so that it can fire
  * notify messages to other users that a message was sent to the server
- * 
- * @author victorrgr
  */
 @Data
 public class Chat {

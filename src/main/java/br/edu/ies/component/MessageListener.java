@@ -59,6 +59,13 @@ public class MessageListener {
         }
     }
 
+    /**
+     * Method to acctually send data to the client
+     * 
+     * @param comm
+     * @throws IOException
+     * @throws JsonProcessingException
+     */
 	private void communicate(CommObject comm) throws IOException, JsonProcessingException {
 		var outputStream = client.getOutputStream();
 		var printStream = new PrintStream(outputStream);

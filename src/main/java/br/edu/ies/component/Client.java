@@ -55,7 +55,6 @@ public class Client {
      */
     public void establishConnection(String host, Integer port) throws IOException {
         this.socket = new Socket(host, port);
-//        confirmServerReceive();
         this.connected = Boolean.TRUE;
     }
 
@@ -100,9 +99,14 @@ public class Client {
         CommObject commObject = new CommObject(Operation.SEND_MESSAGE, message, this);
         communicate(Utils.MAPPER.writeValueAsString(commObject));
         message.print();
-//        confirmServerReceive();
     }
 
+    /**
+     * Method to actually send data to the server
+     * 
+     * @param str
+     * @throws IOException
+     */
 	private void communicate(String str) throws IOException {
         var printStream = new PrintStream(socket.getOutputStream());
         printStream.println(str);

@@ -6,8 +6,6 @@ import br.edu.ies.component.Client;
 import br.edu.ies.util.Utils;
 import lombok.Data;
 
-// TODO: Encontrar um nome melhorar para colocar nesse objeto
-
 /**
  * Common Object used to enable ease communication between
  * client and server sockets. It will be serialized as JSON.

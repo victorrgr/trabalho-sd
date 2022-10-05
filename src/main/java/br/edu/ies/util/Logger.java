@@ -2,7 +2,7 @@ package br.edu.ies.util;
 
 /**
  * Custom utilitary logger for displaying messages
- * to the server
+ * in the server
  */
 public class Logger {
 	private static final String PROCESS = "PROCESS";
@@ -33,10 +33,6 @@ public class Logger {
 
 	public static void separator() {
 		System.out.println(SEPARATOR);
-	}
-
-	public static void logAssertion() {
-		System.out.println("ASSERTIONS");
 	}
 
 }
