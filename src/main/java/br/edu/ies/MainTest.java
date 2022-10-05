@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import br.edu.ies.component.Client;
 import br.edu.ies.component.MessageListener;
@@ -23,6 +22,7 @@ public class MainTest {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
         	var clientConnections = new ArrayList<Client>();
         	var serverClientConnections = new ArrayList<Socket>();
+        	var listeners = new ArrayList<MessageListener>();
         	
         	for (int i = 0; i < 10; i++) {
     			Client client = new Client(String.valueOf(i), "Client-" + i);
@@ -30,30 +30,33 @@ public class MainTest {
     			clientConnections.add(client);
     			
     			System.out.println("Client's Name -> " + client.getName());
+    			System.out.println("Client's Local Port -> " + client.getSocket().getLocalPort());
     			Socket serverClient = serverSocket.accept();
+    			var listener = new MessageListener(serverClient, server.getChat());
+    			listener.subcribe();
+    			listeners.add(listener);
     			serverClientConnections.add(serverClient);
     		}
         	
-        	var receivers = new ArrayList<Receiver>();
-        	
         	for (int i = 0; i < 10; i++) {
+        		System.out.println("SEND MESSAGE");
+        		
         		var client = clientConnections.get(i);
         		client.sendMessage("Test");
     			
-        		var serverClient = serverClientConnections.get(i);
+        		System.out.println("SERVER LISTENER");
         		
-    			var listener = new MessageListener(serverClient, server.getChat());
-    			listener.subcribe();
+        		var serverClient = serverClientConnections.get(i);
     			server.handleConnectionSync(serverClient);
 				
-    			var messageReceiver = new MessageReceiver();
-    			Receiver receiver = new Receiver(messageReceiver, client);
-    			receivers.add(receiver);
-    			for (var x : receivers) {
-    				x.getMessageReceiver().handleConnectionSync(x.getClient());
+    			System.out.println("MESSAGE RECEIVER");
+    			
+    			for (var cli : clientConnections) {
+    				var messageReceiver = new MessageReceiver();
+        			messageReceiver.handleConnectionSync(cli);
     			}
     			
-				System.out.println("Client's Chat -> " + client.getChat());
+    			System.out.println("END " + i);
         	}
 			
 			System.out.println("Server -> " + server);

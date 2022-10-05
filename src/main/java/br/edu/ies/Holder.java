@@ -5,11 +5,11 @@ import br.edu.ies.component.MessageReceiver;
 import lombok.Data;
 
 @Data
-public class Receiver {
+public class Holder {
 	private MessageReceiver messageReceiver;
 	private Client client;
 	
-	public Receiver(MessageReceiver messageReceiver, Client client) {
+	public Holder(MessageReceiver messageReceiver, Client client) {
 		super();
 		this.messageReceiver = messageReceiver;
 		this.client = client;

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import br.edu.ies.model.Chat;
 import br.edu.ies.model.CommObject;
 import br.edu.ies.model.Message;
@@ -50,14 +52,18 @@ public class MessageListener {
     public void notify(Message message) {
         try {
             CommObject comm = new CommObject(Operation.RECEIVE_MESSAGE, message);
-            var outputStream = client.getOutputStream();
-            var printStream = new PrintStream(outputStream);
-            printStream.println(Utils.MAPPER.writeValueAsString(comm));
+            communicate(comm);
             Logger.logClient("Message Notified -> " + message);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+	private void communicate(CommObject comm) throws IOException, JsonProcessingException {
+		var outputStream = client.getOutputStream();
+		var printStream = new PrintStream(outputStream);
+		printStream.println(Utils.MAPPER.writeValueAsString(comm));
+	}
     
     /**
      * Notift a leave message to the assigned user
@@ -66,9 +72,7 @@ public class MessageListener {
     public void notifyLeave(Message message) {
         try {
             CommObject comm = new CommObject(Operation.RECEIVE_LEAVE_MESSAGE, message);
-            var outputStream = client.getOutputStream();
-            var printStream = new PrintStream(outputStream);
-            printStream.println(Utils.MAPPER.writeValueAsString(comm));
+            communicate(comm);
             Logger.logClient("Message Notified -> " + message);
         } catch (IOException e) {
             throw new RuntimeException(e);
